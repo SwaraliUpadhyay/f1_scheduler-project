@@ -2,11 +2,11 @@
   "args": {
     "races": null,
     "fast_workers": 1,
-    "smart_workers": 1,
+    "smart_workers": 3,
     "threshold": 0.5,
     "mode": "two_stage",
     "seed": 42,
-    "no_plots": true
+    "no_plots": false
   },
   "workload": {
     "total_requests": 43468,
@@ -34,6 +34,6 @@
       "rain+pit_window": 40,
       "caution+rain": 31
     },
-    "offered_load_ms": 136391.96117011958
+    "offered_load_ms": 3221223.2355541256
   }
 }

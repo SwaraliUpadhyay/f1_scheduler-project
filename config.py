@@ -61,8 +61,8 @@ REFINEMENT_MAX_URGENCY = 0.5
 # measured RTT once cloud/lambda_handler.py is deployed (DB role 4).
 # ---------------------------------------------------------------------
 FAST_SERVICE_MS = 0.5152510001789778
-SMART_COMPUTE_MS = 2.3160899998038076
-SMART_NETWORK_MS = 0.0
+SMART_COMPUTE_MS = 33.6
+SMART_NETWORK_MS = 119.8
 
 # Data-source access cost, added to service time by the router's
 # allocation decision. Measure these with data/bench_db.py (DB role 5).

@@ -1,0 +1,96 @@
+{
+  "relational_writes": {
+    "stack": "sqlite",
+    "rows": 1153,
+    "elapsed_s": 0.008772199973464012,
+    "throughput_rows_per_s": 131437.95210868833,
+    "batch_latency": {
+      "n": 24,
+      "avg_ms": 0.3392833362643917,
+      "p50_ms": 0.25349995121359825,
+      "p95_ms": 0.8773000445216894,
+      "p99_ms": 1.2103000190109015,
+      "max_ms": 1.2103000190109015
+    }
+  },
+  "relational_reads": {
+    "stack": "sqlite",
+    "reads": 2050,
+    "elapsed_s": 0.04299620003439486,
+    "throughput_reads_per_s": 47678.63202701867,
+    "latency": {
+      "n": 2050,
+      "avg_ms": 0.018993025055018868,
+      "p50_ms": 0.005799927748739719,
+      "p95_ms": 0.03839994315057993,
+      "p99_ms": 0.058699981309473515,
+      "max_ms": 0.23260002490133047
+    }
+  },
+  "cassandra_writes": {
+    "stack": "cassandra",
+    "rows": 1153,
+    "elapsed_s": 0.57680179993622,
+    "throughput_rows_per_s": 1998.953540241194,
+    "batch_latency": {
+      "n": 37,
+      "avg_ms": 15.208916203748133,
+      "p50_ms": 15.255599981173873,
+      "p95_ms": 17.27399998344481,
+      "p99_ms": 31.402900000102818,
+      "max_ms": 31.402900000102818
+    }
+  },
+  "cassandra_reads": {
+    "stack": "cassandra",
+    "reads": 2050,
+    "elapsed_s": 33.64480739994906,
+    "throughput_reads_per_s": 60.93065047544614,
+    "latency": {
+      "n": 2050,
+      "avg_ms": 16.390839560161822,
+      "p50_ms": 15.674800029955804,
+      "p95_ms": 23.975999909453094,
+      "p99_ms": 37.41649992298335,
+      "max_ms": 60.964399948716164
+    }
+  },
+  "cached_reads_cold": {
+    "stack": "cassandra+redis",
+    "reads": 2050,
+    "elapsed_s": 32.77599860006012,
+    "throughput_reads_per_s": 62.54576786552095,
+    "cache": {
+      "hits": 0,
+      "misses": 1153,
+      "hit_rate": 0.0
+    },
+    "cassandra_latency": {
+      "n": 2050,
+      "avg_ms": 14.42084492507913,
+      "p50_ms": 14.308999991044402,
+      "p95_ms": 17.10369996726513,
+      "p99_ms": 27.734500006772578,
+      "max_ms": 73.22259992361069
+    }
+  },
+  "cached_reads_warm": {
+    "stack": "cassandra+redis",
+    "reads": 2050,
+    "elapsed_s": 14.146225600037724,
+    "throughput_reads_per_s": 144.91498000671876,
+    "cache": {
+      "hits": 1153,
+      "misses": 0,
+      "hit_rate": 1.0
+    },
+    "cassandra_latency": {
+      "n": 897,
+      "avg_ms": 14.219483387253664,
+      "p50_ms": 14.337000087834895,
+      "p95_ms": 16.17610000539571,
+      "p99_ms": 19.494500011205673,
+      "max_ms": 57.325399946421385
+    }
+  }
+}
