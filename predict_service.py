@@ -132,6 +132,12 @@ try:
         track_temp: float = 35.0
         rainfall: bool = False
         laps_since_field_pit: int = 0
+        # Models are TRAINED on is_caution (derived from track_status in
+        # models.prepare_features). Without it here, _lap_dict_to_row's
+        # reindex(fill_value=0) silently tells the model "green flag" on
+        # every request, including under a safety car — which is one of
+        # the strongest real pit triggers. Callers should pass it.
+        is_caution: float = 0.0
 
     class SmartRequest(BaseModel):
         laps: List[LapFeatures]

@@ -1,0 +1,43 @@
+# docker-compose.yml — local Cassandra + Redis for development.
+#
+#   docker compose up -d
+#   docker compose exec cassandra cqlsh -f /schema.cql    # after ~60s
+#
+# Cassandra takes 45-90s to accept connections on first boot. The
+# healthcheck below is what makes `docker compose up --wait` reliable;
+# without it you will get connection errors and assume something is broken.
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: f1-cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=f1
+      - MAX_HEAP_SIZE=1G
+      - HEAP_NEWSIZE=256M
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+      - ./data/schema.cql:/schema.cql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    container_name: f1-redis
+    ports:
+      - "6379:6379"
+    # No persistence: this is a cache. Enabling AOF/RDB would measure
+    # disk, not cache, and would misrepresent the latency you report.
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  cassandra-data:

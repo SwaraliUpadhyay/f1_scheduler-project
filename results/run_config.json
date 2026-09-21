@@ -1,0 +1,39 @@
+{
+  "args": {
+    "races": null,
+    "fast_workers": 1,
+    "smart_workers": 1,
+    "threshold": 0.5,
+    "mode": "two_stage",
+    "seed": 42,
+    "no_plots": true
+  },
+  "workload": {
+    "total_requests": 43468,
+    "urgent_requests": 6798,
+    "urgent_fraction": 0.15639090825434804,
+    "burst_requests": 43312,
+    "burst_fraction": 0.9964111530321156,
+    "by_resource": {
+      "fast_local": 23050,
+      "smart_cloud": 20418
+    },
+    "by_burst_reason": {
+      "overtake+pit_window": 22531,
+      "overtake": 11720,
+      "caution+overtake+pit_window": 3053,
+      "caution+overtake": 1840,
+      "pit_window": 1258,
+      "rain+overtake+pit_window": 866,
+      "rain+overtake": 744,
+      "caution+pit_window": 340,
+      "caution+rain+overtake+pit_window": 304,
+      "caution+rain+overtake": 303,
+      "caution": 220,
+      "caution+rain+pit_window": 62,
+      "rain+pit_window": 40,
+      "caution+rain": 31
+    },
+    "offered_load_ms": 136391.96117011958
+  }
+}

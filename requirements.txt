@@ -1,0 +1,25 @@
+# --- shared ---
+numpy>=1.24
+pandas>=2.0
+pyarrow>=14.0          # parquet engine — pandas needs this, it is not optional
+
+# --- ML workstream (already built) ---
+scikit-learn>=1.3
+torch>=2.0
+fastf1>=3.1            # only needed to regenerate the dataset
+
+# --- OS workstream ---
+matplotlib>=3.7        # plots in sched/metrics.py; optional, skipped if absent
+
+# --- DB workstream ---
+cassandra-driver>=3.28
+redis>=5.0
+
+# --- cloud function (DB role 4) ---
+flask>=3.0             # Cloud Run entrypoint
+requests>=2.31         # RTT measurement
+
+# --- optional HTTP wrapper for predict_service.py ---
+fastapi>=0.104
+uvicorn>=0.24
+pydantic>=2.0
