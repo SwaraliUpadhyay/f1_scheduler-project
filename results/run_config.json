@@ -1,39 +1,36 @@
 {
   "args": {
-    "races": null,
+    "races": [
+      "2022_Monaco_Grand_Prix"
+    ],
     "fast_workers": 1,
-    "smart_workers": 3,
+    "smart_workers": 1,
     "threshold": 0.5,
     "mode": "two_stage",
     "seed": 42,
-    "no_plots": false
+    "no_plots": true
   },
   "workload": {
-    "total_requests": 43468,
-    "urgent_requests": 6798,
-    "urgent_fraction": 0.15639090825434804,
-    "burst_requests": 43312,
-    "burst_fraction": 0.9964111530321156,
+    "total_requests": 2050,
+    "urgent_requests": 620,
+    "urgent_fraction": 0.3024390243902439,
+    "burst_requests": 2050,
+    "burst_fraction": 1.0,
     "by_resource": {
-      "fast_local": 23050,
-      "smart_cloud": 20418
+      "fast_local": 1153,
+      "smart_cloud": 897
     },
     "by_burst_reason": {
-      "overtake+pit_window": 22531,
-      "overtake": 11720,
-      "caution+overtake+pit_window": 3053,
-      "caution+overtake": 1840,
-      "pit_window": 1258,
-      "rain+overtake+pit_window": 866,
-      "rain+overtake": 744,
-      "caution+pit_window": 340,
-      "caution+rain+overtake+pit_window": 304,
-      "caution+rain+overtake": 303,
-      "caution": 220,
-      "caution+rain+pit_window": 62,
-      "rain+pit_window": 40,
-      "caution+rain": 31
+      "overtake+pit_window": 779,
+      "overtake": 296,
+      "rain+overtake": 283,
+      "caution+rain+overtake": 231,
+      "rain+overtake+pit_window": 135,
+      "caution+rain+overtake+pit_window": 116,
+      "caution+overtake+pit_window": 112,
+      "caution+overtake": 58,
+      "caution": 40
     },
-    "offered_load_ms": 3221223.2355541256
+    "offered_load_ms": 141621.63440320638
   }
 }

@@ -107,6 +107,19 @@ class RaceStore:
             wait_time_ms=wait_time_ms, response_time_ms=response_time_ms,
         )
 
+        # -- DB ENHANCEMENT PASS (additive) ---------------------------
+        # Every prediction that already gets logged also updates the
+        # live leaderboard (TTL) and the event counters (counter
+        # columns), so those NoSQL features are exercised by the real
+        # pipeline every time it runs, not just by a standalone demo.
+        # Nothing above this comment changed; this call adds two extra
+        # writes but does not change this method's signature or return
+        # value (still None), so router.py/scheduler.py need no changes.
+        self.db.update_leaderboard(race_id, driver, lap_number, float(urgency_score))
+        self.db.increment_counter(race_id, f"predictions_{model_used}")
+        if pit == 1:
+            self.db.increment_counter(race_id, "pit_stops")
+
     # -- instrumentation ----------------------------------------------
     def stats(self) -> Dict:
         return {
@@ -118,6 +131,51 @@ class RaceStore:
     def reset_stats(self):
         self.cache.reset_stats()
         self.db.reset_latencies()
+
+    # ===================================================================
+    # DB ENHANCEMENT PASS — new facade methods. The ML/OS leads still
+    # never need to touch these; they exist for the DB report + demo.
+    # ===================================================================
+
+    # -- UDF/UDA-backed reads --
+    def get_lap_enriched(self, race_id: str, driver: str, lap_number: int) -> Optional[Dict]:
+        return self.db.get_lap_enriched(race_id, driver, lap_number)
+
+    def avg_urgency_for_race(self, race_id: str) -> Optional[float]:
+        return self.db.avg_urgency_for_race(self.run_id, race_id)
+
+    def response_time_bucket_counts(self, race_id: str) -> Dict[str, int]:
+        return self.db.response_time_bucket_counts(self.run_id, race_id)
+
+    # -- B1: TTL --
+    def get_leaderboard(self, race_id: str) -> List[Dict]:
+        return self.db.get_leaderboard(race_id)
+
+    # -- B2: counters --
+    def get_counter(self, race_id: str, counter_name: str) -> int:
+        return self.db.get_counter(race_id, counter_name)
+
+    # -- B3: collections --
+    def add_compound_used(self, race_id: str, driver: str, compound: str):
+        self.db.add_compound_used(race_id, driver, compound)
+
+    def append_stint(self, race_id: str, driver: str, stint_label: str):
+        self.db.append_stint(race_id, driver, stint_label)
+
+    def get_driver_summary(self, race_id: str, driver: str) -> Optional[Dict]:
+        return self.db.get_driver_summary(race_id, driver)
+
+    # -- B4: materialized view --
+    def get_predictions_by_driver(self, driver: str, limit: int = 50) -> List[Dict]:
+        return self.db.get_predictions_by_driver(driver, limit)
+
+    # -- B5: lightweight transaction --
+    def upsert_driver_if_not_exists(self, race_id: str, driver: str, max_lap: int) -> bool:
+        return self.db.upsert_driver_if_not_exists(race_id, driver, max_lap)
+
+    # ===================================================================
+    # END DB ENHANCEMENT PASS
+    # ===================================================================
 
     def close(self):
         self.db.close()

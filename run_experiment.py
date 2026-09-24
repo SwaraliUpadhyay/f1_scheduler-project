@@ -12,11 +12,54 @@ Writes CSVs and figures into results/.
 import argparse
 import json
 import os
+from datetime import datetime, timezone, timedelta
+
+from data.cassandra_client import CassandraClient
 
 from config import (FAST_WORKERS, SMART_WORKERS, RESULTS_DIR,
                     URGENCY_THRESHOLD, ROUTING_MODE)
 from sched import metrics, replay
 from sched.scheduler import compare_policies
+
+def log_results_to_cassandra(results, run_id):
+    """Store scheduler results from both policies in Cassandra."""
+
+    client = CassandraClient()
+
+    try:
+        for policy_name in ("priority", "fcfs"):
+            policy_run_id = f"{run_id}_{policy_name}"
+
+            # Use one base timestamp for this experiment.
+            base_ts = datetime.now(timezone.utc)
+
+            for r in results[policy_name]["requests"]:
+                request_ts = base_ts + timedelta(
+                    milliseconds=r.arrival_time_ms
+                )
+
+                client.log_prediction(
+                    run_id=policy_run_id,
+                    race_id=r.race_id,
+                    request_ts=request_ts,
+                    request_id=r.id,
+                    driver=r.driver,
+                    lap_number=r.lap_number,
+                    urgency_score=r.urgency_score,
+                    model_used=r.resource,
+                    data_source=r.data_source,
+                    scheduling_policy=policy_name,
+                    pit=None,
+                    pit_prob=None,
+                    compound=None,
+                    wait_time_ms=r.wait_time_ms,
+                    response_time_ms=r.response_time_ms,
+                )
+
+        print("Cassandra: scheduler results logged successfully.")
+
+    finally:
+        client.close()
 
 
 def main():
