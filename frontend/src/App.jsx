@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import DbFeatures from './DbFeatures.jsx';
 
 const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const NAV = [{id:'overview',n:'01',label:'Overview',icon:'◫'},{id:'run',n:'02',label:'Run scheduler',icon:'⌁'},{id:'results',n:'03',label:'Results',icon:'▤'},{id:'evaluation',n:'04',label:'Evaluation',icon:'↗'},{id:'testing',n:'05',label:'Testing',icon:'✓'}];
+const NAV = [{id:'overview',n:'01',label:'Overview',icon:'◫'},{id:'run',n:'02',label:'Run scheduler',icon:'⌁'},{id:'results',n:'03',label:'Results',icon:'▤'},{id:'evaluation',n:'04',label:'Evaluation',icon:'↗'},{id:'testing',n:'05',label:'Testing',icon:'✓'},{id:'database',n:'06',label:'Database features',icon:'⛁'}];
 const reference = { urgent_p95_fcfs_ms:113.59, urgent_p95_priority_ms:43.05, urgent_avg_fcfs_ms:23.07, urgent_avg_priority_ms:9.25, nonurgent_avg_fcfs_ms:35.44, nonurgent_avg_priority_ms:38.00, overhead_us:0.62, overhead_pct:0.017, requests:43468 };
 const fmt=(n,d=2)=>Number.isFinite(Number(n))?Number(n).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:0}):'—';
 const pct=(n)=>`${fmt(n,1)}%`;
@@ -22,6 +23,7 @@ function App(){
  {page==='results'&&<Results data={data} demo={demo} loading={loading} error={error} onDemo={showDemo} onRun={()=>nav('run')} onCSV={downloadCSV} query={query} setQuery={setQuery}/>}
  {page==='evaluation'&&<Evaluation data={data} demo={demo} onDemo={showDemo} onRun={()=>nav('run')}/>}
  {page==='testing'&&<Testing tests={tests} loading={testsLoading} runTests={runTests}/>}
+ {page==='database'&&<DbFeatures API={API} health={health}/>}
  <footer><span>F1 SCHEDULER <i>·</i> Academic systems project</span><span>Historical replay · Discrete-event simulation</span></footer></main></div>
 }
 function PageTitle({eyebrow,title,desc}){return <div className="page-title"><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{desc}</p></div>}

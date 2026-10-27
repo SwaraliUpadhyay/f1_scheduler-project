@@ -173,6 +173,13 @@ class RaceStore:
     def upsert_driver_if_not_exists(self, race_id: str, driver: str, max_lap: int) -> bool:
         return self.db.upsert_driver_if_not_exists(race_id, driver, max_lap)
 
+    # -- dashboard demo helpers --
+    def get_leaderboard_with_ttl(self, race_id: str) -> List[Dict]:
+        return self.db.get_leaderboard_with_ttl(race_id)
+
+    def urgency_values_for_race(self, race_id: str) -> List[float]:
+        return self.db.urgency_values_for_race(self.run_id, race_id)
+
     # ===================================================================
     # END DB ENHANCEMENT PASS
     # ===================================================================

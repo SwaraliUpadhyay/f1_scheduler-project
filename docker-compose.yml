@@ -2,6 +2,7 @@
 #
 #   docker compose up -d
 #   docker compose exec cassandra cqlsh -f /schema.cql    # after ~60s
+#   docker compose exec cassandra cqlsh -f /schema_extensions.cql
 #
 # Cassandra takes 45-90s to accept connections on first boot. The
 # healthcheck below is what makes `docker compose up --wait` reliable;
@@ -19,6 +20,16 @@ services:
     volumes:
       - cassandra-data:/var/lib/cassandra
       - ./data/schema.cql:/schema.cql:ro
+      - ./data/schema_extensions.cql:/schema_extensions.cql:ro
+    # UDFs/UDAs and materialized views are OFF by default in Cassandra 4.1;
+    # schema_extensions.cql needs both. Flip them in cassandra.yaml, then
+    # start normally (single-node dev cluster only).
+    command:
+      - bash
+      - -c
+      - |
+        sed -i -E 's/^#? ?(user_defined_functions_enabled|enable_user_defined_functions):.*/user_defined_functions_enabled: true/; s/^#? ?(materialized_views_enabled|enable_materialized_views):.*/materialized_views_enabled: true/' /etc/cassandra/cassandra.yaml
+        exec docker-entrypoint.sh cassandra -f
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces' || exit 1"]
       interval: 15s

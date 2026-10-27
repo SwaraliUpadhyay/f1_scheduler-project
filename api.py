@@ -29,6 +29,10 @@ app.add_middleware(
 )
 
 
+from db_api import router as db_router  # Part A / Part B database features
+app.include_router(db_router)
+
+
 class RunRequest(BaseModel):
     races: list[str] = Field(default_factory=list)
     mode: str = "two_stage"

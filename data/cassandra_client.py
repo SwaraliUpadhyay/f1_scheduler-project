@@ -115,6 +115,16 @@ class CassandraClient:
             "INSERT INTO race_drivers (race_id, driver, max_lap) "
             "VALUES (?, ?, ?) IF NOT EXISTS")
 
+        # -- dashboard demo helpers --
+        self.ps_leaderboard_ttl = self.session.prepare(
+            "SELECT driver, lap_number, urgency, updated_at, "
+            "TTL(urgency) AS ttl_remaining_sec "
+            "FROM live_leaderboard WHERE race_id=?")
+        self.ps_urgency_values = self.session.prepare(
+            "SELECT urgency_score FROM predictions_log WHERE run_id=? AND race_id=?")
+        self.ps_delete_driver = self.session.prepare(
+            "DELETE FROM race_drivers WHERE race_id=? AND driver=?")
+
     # -- UDF/UDA-backed reads ------------------------------------------
     def get_lap_enriched(self, race_id: str, driver: str, lap_number: int) -> Optional[Dict]:
         """Same point read as get_lap(), but urgency score, pit-window
@@ -188,6 +198,21 @@ class CassandraClient:
         rows = self._timed(self.ps_upsert_driver_lwt, [race_id, driver, max_lap])
         row = rows.one()
         return bool(row.applied) if row else False
+
+    # -- extra read/cleanup helpers used by the dashboard demo (additive) --
+    def get_leaderboard_with_ttl(self, race_id: str) -> List[Dict]:
+        """Leaderboard rows plus the seconds left before each self-expires."""
+        rows = self._timed(self.ps_leaderboard_ttl, [race_id])
+        return [dict(r._asdict()) for r in rows]
+
+    def urgency_values_for_race(self, run_id: str, race_id: str) -> List[float]:
+        """Raw urgency_score values, used ONLY to cross-check the UDA
+        against a client-side average."""
+        rows = self._timed(self.ps_urgency_values, [run_id, race_id])
+        return [r.urgency_score for r in rows if r.urgency_score is not None]
+
+    def delete_driver(self, race_id: str, driver: str):
+        self._timed(self.ps_delete_driver, [race_id, driver])
 
     # ===================================================================
     # END DB ENHANCEMENT PASS
