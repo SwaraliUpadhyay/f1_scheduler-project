@@ -91,7 +91,7 @@ class DbRequest(BaseModel):
 
 def _clean(v):
     """Make Cassandra values JSON friendly (sets, datetimes, float32 noise)."""
-    if isinstance(v, (set, frozenset)):
+    if isinstance(v, (set, frozenset)) or type(v).__name__ == "SortedSet":
         return sorted(v)
     if isinstance(v, (_dt.datetime, _dt.date)):
         return v.isoformat()
@@ -282,7 +282,7 @@ def b3_collections(req: DbRequest) -> Dict:
     store.add_compound_used(req.race, req.driver, "SOFT")     # duplicate on purpose
     label = f"MEDIUM:1-{req.lap}"
     existing = store.get_driver_summary(req.race, req.driver) or {}
-    if label not in (existing.get("stint_history") or []):
+    if label not in list(existing.get("stint_history") or []):
         store.append_stint(req.race, req.driver, label)
     summary = store.get_driver_summary(req.race, req.driver) or {}
     return {
@@ -290,11 +290,10 @@ def b3_collections(req: DbRequest) -> Dict:
                 "WHERE race_id=? AND driver=?;   -- run twice, stored once\n"
                 "UPDATE driver_race_summary SET stint_history = stint_history + ['MEDIUM:1-N']\n"
                 "WHERE race_id=? AND driver=?"),
-        "result": {"compounds_used (SET)": summary.get("compounds_used"),
-                   "stint_history (LIST)": summary.get("stint_history"),
+        "result": {"compounds_used (SET)": sorted(summary.get("compounds_used") or []),
+                   "stint_history (LIST)": list(summary.get("stint_history") or []),
                    "note": "SOFT was added twice; the SET keeps one copy."},
     }
-
 
 def b4_mview(req: DbRequest) -> Dict:
     store = _get_store()

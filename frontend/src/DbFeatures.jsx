@@ -115,12 +115,18 @@ function ResultView({ fkey, r }) {
           <p className="db-line"><Chip ok={t.no_lost_updates}>{t.no_lost_updates ? 'NO LOST UPDATES' : 'LOST UPDATES'}</Chip> {t.parallel_increments} parallel increments: {t.before} → {t.after} (expected {t.expected}).</p>
         </>);
     }
-    case 'collections': return (
-      <>
-        <div className="db-kvs wide"><KV k="compounds_used · SET" v={<span className="db-chips">{(r['compounds_used (SET)'] || []).map(c => <Chip key={c}>{c}</Chip>)}</span>} />
-          <KV k="stint_history · LIST" v={<ol className="db-list">{(r['stint_history (LIST)'] || []).map((s, i) => <li key={i}>{s}</li>)}</ol>} /></div>
-        <p className="db-line muted">{r.note}</p>
-      </>);
+    case 'collections': {
+      const compounds = Array.isArray(r['compounds_used (SET)']) ? r['compounds_used (SET)'] : [];
+      const stints = Array.isArray(r['stint_history (LIST)']) ? r['stint_history (LIST)'] : [];
+      return (
+        <>
+          <div className="db-kvs wide">
+            <KV k="compounds_used · SET" v={<span className="db-chips">{compounds.map(c => <Chip key={c}>{c}</Chip>)}</span>} />
+            <KV k="stint_history · LIST" v={<ol className="db-list">{stints.map((s, i) => <li key={i}>{s}</li>)}</ol>} />
+          </div>
+          <p className="db-line muted">{r.note}</p>
+        </>);
+    }
     case 'materialized_view': return (
       <>
         <p className="db-line"><b>{r.rows_found}</b> prediction row(s) for driver <b>{r.driver}</b>, no run_id / race_id supplied.</p>
